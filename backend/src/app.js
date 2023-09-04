@@ -1,5 +1,5 @@
 require("dotenv").config()
-const path = require("path")
+const path = require("node:path")
 
 const cors = require("cors")
 
@@ -18,9 +18,12 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-app.post("/image", fileUpload, createOne)
+app.post("/image", fileUpload.single("file"), createOne)
 app.get("/image", browse)
 app.delete("/image/:id", removeOne)
+
+app.use("/", express.static(path.join(__dirname, "../public")))
+app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")))
 
 app.get("*", (req, res) => res.status(404).json({ message: "Not found !" }))
 

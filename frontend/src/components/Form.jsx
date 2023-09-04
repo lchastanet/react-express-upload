@@ -1,11 +1,26 @@
 import { useState } from "react"
+import axios from "axios"
 
-function Form() {
+function Form({ setFilesDisplay }) {
   const [files, setFiles] = useState([])
   const [name, setName] = useState("")
 
   const handleForm = (e) => {
     e.preventDefault()
+
+    const formData = new FormData()
+
+    formData.append("file", files[0])
+    formData.append("name", name)
+
+    axios
+      .post("http://localhost:8000/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        setFiles([])
+        setFilesDisplay((prev) => [...prev, res.data])
+      })
   }
 
   return (
@@ -17,7 +32,14 @@ function Form() {
             backgroundColor: "lightgray",
             marginBottom: "1rem",
           }}
-        ></div>
+        >
+          {Boolean(files.length) && (
+            <img
+              style={{ height: "12rem" }}
+              src={URL.createObjectURL(files[0])}
+            />
+          )}
+        </div>
       </div>
       <div className="form-group mb-2">
         <label htmlFor="inputName">Nom</label>
